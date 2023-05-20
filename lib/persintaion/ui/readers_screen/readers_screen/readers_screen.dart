@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mohafez_elwaheen_student/bloc/teacher_cubit/teacher_cubit.dart';
 import 'package:mohafez_elwaheen_student/core/helpers/helper_functions.dart';
 import 'package:mohafez_elwaheen_student/core/styls/colors.dart';
+import 'package:mohafez_elwaheen_student/models/teacher.dart';
 
+import '../../../../core/enums.dart';
+import '../../../../core/helpers/api_constatns.dart';
+import '../../../../core/widgets/chached_image_widget.dart';
+import '../../../../core/widgets/list_empty.dart';
+import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/texts.dart';
 import '../../reader_screen/reader_screen/reader_screenA.dart';
 
 class ReadersScreen extends StatefulWidget {
-  final int type;
+  final String type;
   const ReadersScreen({required this.type});
 
   @override
@@ -18,9 +26,10 @@ class ReadersScreen extends StatefulWidget {
 class _ReadersScreenState extends State<ReadersScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     print(widget.type.toString());
+
+    TeacherCubit.get(context).getTeachers(gender: widget.type);
   }
 
   @override
@@ -30,9 +39,13 @@ class _ReadersScreenState extends State<ReadersScreen> {
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
-          leading: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
+          leading: InkWell(
+            onTap: () => pop(context),
+
+            child: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            ),
           ),
           title: const Text(
             'الرئيسية',
@@ -44,87 +57,99 @@ class _ReadersScreenState extends State<ReadersScreen> {
             textAlign: TextAlign.right,
             softWrap: false,
           )),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
-        child: ListView.builder(
-            itemCount: 4,
-            itemBuilder: (ctx, index) {
-              return Container(
-                height: 100,
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: const BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(color: Colors.grey, width: .2))),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 55,
-                      width: 55,
-                      decoration: const BoxDecoration(shape: BoxShape.circle),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(25),
-                          child: Image.asset(
-                            "assets/images/img.png",
-                            width: 55,
-                            height: 55,
-                            fit: BoxFit.cover,
-                          )),
-                    ),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    Expanded(
-                        child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'محمد ابراهيم',
-                          style: TextStyle(
-                              fontSize: 28,
-                              color: Color(0xff433826),
-                              fontWeight: FontWeight.w700,
-                              height: .8),
-                          textAlign: TextAlign.right,
-                          softWrap: false,
-                        ),
-                        Text(
-                          'مصر',
-                          style: TextStyle(
-                            height: .8,
-                            fontSize: 28,
-                            color: Color(0xffa7a7a7),
-                          ),
-                          textAlign: TextAlign.right,
-                          softWrap: false,
-                        )
-                      ],
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        pushPage(context, ReaderScreen());
-                      },
-                      child: Container(
-                        height: 40,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 30),
-                        decoration: BoxDecoration(
-                          color: const Color(0x330d7f43),
-                          borderRadius: BorderRadius.circular(21.0),
-                        ),
-                        child: const Texts(
-                            title: "ابدأ",
-                            textColor: Colors.green,
-                            fontSize: 20,
-                            weight: FontWeight.bold,
-                            align: TextAlign.center),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
+      body: BlocBuilder<TeacherCubit, TeacherState>(
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+            child: state.getTeachersState == RequestState.loading
+                ? const Center(
+                    child: LoadingWidget(height: 55, color: Colors.green))
+                : state.teachers.isEmpty
+                    ? const ListEmptyWidget(
+                        title: "لا يوجد قراء",
+                        textColor: Colors.black,
+                      )
+                    : ListView.builder(
+                        itemCount: state.teachers.length,
+                        itemBuilder: (ctx, index) {
+                          Teacher teacher = state.teachers[index];
+                          return Container(
+                            height: 100,
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            decoration: const BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        color: Colors.grey, width: .2))),
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 55,
+                                  width: 55,
+                                  decoration: const BoxDecoration(
+                                      shape: BoxShape.circle),
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(25),
+                                      child: CircleImageWidget(
+                      height: 55, width: 55, image: ApiConstants.imageUrl(teacher.image)),
+                                )),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                Expanded(
+                                    child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children:  [
+                                    Text(
+                                      teacher.name!,
+                                      style:const TextStyle(
+                                          fontSize: 28,
+                                          color: Color(0xff433826),
+                                          fontWeight: FontWeight.w700,
+                                          height: .8),
+                                      textAlign: TextAlign.right,
+                                      softWrap: false,
+                                    ),
+                                    Text(
+                                     teacher.country!,
+                                      style:const TextStyle(
+                                        height: .8,
+                                        fontSize: 28,
+                                        color: Color(0xffa7a7a7),
+                                      ),
+                                      textAlign: TextAlign.right,
+                                      softWrap: false,
+                                    )
+                                  ],
+                                )),
+                                GestureDetector(
+                                  onTap: () {
+                                    pushPage(context,  ReaderScreen(teacher:teacher));
+                                  },
+                                  child: Container(
+                                    height: 40,
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0x330d7f43),
+                                      borderRadius: BorderRadius.circular(21.0),
+                                    ),
+                                    child: const Texts(
+                                        title: "ابدأ",
+                                        textColor: Colors.green,
+                                        fontSize: 20,
+                                        weight: FontWeight.bold,
+                                        align: TextAlign.center),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+          );
+        },
       ),
     );
   }

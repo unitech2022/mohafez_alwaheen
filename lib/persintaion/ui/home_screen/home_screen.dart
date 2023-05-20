@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               onTap: () {
                                 pop(context);
                                 pushPage(
-                                    context, ReadersScreen(type: currentIndex));
+                                    context, ReadersScreen(type: currentIndex == 2?"أنثى": "ذكر"));
                               },
                               child: Container(
                                 height: 50,

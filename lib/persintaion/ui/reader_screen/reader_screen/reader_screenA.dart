@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mohafez_elwaheen_student/bloc/table_cubit/table_cubit.dart';
+import 'package:mohafez_elwaheen_student/core/enums.dart';
 import 'package:mohafez_elwaheen_student/core/helpers/helper_functions.dart';
+import 'package:mohafez_elwaheen_student/models/teacher.dart';
 
+import '../../../../core/helpers/api_constatns.dart';
+import '../../../../core/widgets/chached_image_widget.dart';
+import '../../../../core/widgets/list_empty.dart';
+import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/texts.dart';
+import '../../../../models/table.dart';
 
 class ReaderScreen extends StatefulWidget {
-  const ReaderScreen({super.key});
+  final Teacher teacher;
+  const ReaderScreen({super.key, required this.teacher});
 
   @override
   State<ReaderScreen> createState() => _ReaderScreenState();
 }
 
 class _ReaderScreenState extends State<ReaderScreen> {
+  @override
+  void initState() {
+    super.initState();
+    TableCubit.get(context).getTables(teacherId: widget.teacher.id!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,120 +54,138 @@ class _ReaderScreenState extends State<ReaderScreen> {
             textAlign: TextAlign.right,
             softWrap: false,
           )),
-      body: Container(
-        width: double.infinity,
-        child: SingleChildScrollView(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            Container(
-              height: 100,
-              width: 100,
-              decoration: const BoxDecoration(shape: BoxShape.circle),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: Image.asset(
-                    "assets/images/img.png",
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  )),
+      body: BlocBuilder<TableCubit, TableState>(
+        builder: (context, state) {
+          return SizedBox(
+            width: double.infinity,
+            child: SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                        height: 100,
+                        width: 100,
+                        decoration: const BoxDecoration(shape: BoxShape.circle),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: CircleImageWidget(
+                              height: 100,
+                              width: 100,
+                              image:
+                                  ApiConstants.imageUrl(widget.teacher.image)),
+                        )),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      widget.teacher.name!,
+                      style: const TextStyle(
+                          fontSize: 34,
+                          color: Color(0xff433826),
+                          fontWeight: FontWeight.w700,
+                          height: .8),
+                      textAlign: TextAlign.right,
+                      softWrap: false,
+                    ),
+                    Text(
+                      widget.teacher.country!,
+                      style: const TextStyle(
+                        height: .8,
+                        fontSize: 34,
+                        color: Color(0xffa7a7a7),
+                      ),
+                      textAlign: TextAlign.right,
+                      softWrap: false,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                 state.getTablesState==RequestState.loading?
+                 
+                 const Padding(padding: EdgeInsets.only(top: 50),
+                 child: LoadingWidget(height: 55, color: Colors.green))
+                : state.tables.isEmpty
+                    ? const ListEmptyWidget(
+                        title: "لا يوجد مواعيد في الوقت الحالي ",
+                        textColor: Colors.black,
+                      )
+                    :  ListView.builder(
+                        itemCount: state.tables.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (ctx, index) {
+                          TableModel table = state.tables[index];
+
+
+                          return Container(
+                              padding: const EdgeInsets.only(
+                                  left: 15, right: 15, bottom: 25),
+                              decoration: const BoxDecoration(),
+                              child: Column(
+                                children: [
+                                   Text(
+                                    table.today!,
+                                    style:const TextStyle(
+                                      fontSize: 30,
+                                      color: const Color(0xff433826),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                  ),
+                                   Text(
+                                   table.dateToday!.split("T")[0],
+                                    style:const TextStyle(
+                                      fontFamily: 'Traditional Arabic',
+                                      fontSize: 26,
+                                      color: const Color(0xff433826),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                  ),
+                                  const Text(
+                                    'من 2:00 م حتي 3:30 م',
+                                    style: TextStyle(
+                                      fontFamily: 'Traditional Arabic',
+                                      fontSize: 20,
+                                      color: const Color(0xffa7a7a7),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showDialogWidget(context);
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width: 220,
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 30),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0x330d7f43),
+                                        borderRadius:
+                                            BorderRadius.circular(21.0),
+                                      ),
+                                      child: const Texts(
+                                          title: "دخول",
+                                          textColor: Colors.green,
+                                          fontSize: 20,
+                                          weight: FontWeight.bold,
+                                          align: TextAlign.center),
+                                    ),
+                                  ),
+                                ],
+                              ));
+                        }),
+                  ]),
             ),
-            const SizedBox(
-              height: 15,
-            ),
-            const Text(
-              'محمد ابراهيم',
-              style: TextStyle(
-                  fontSize: 34,
-                  color: Color(0xff433826),
-                  fontWeight: FontWeight.w700,
-                  height: .8),
-              textAlign: TextAlign.right,
-              softWrap: false,
-            ),
-            const Text(
-              'مصر',
-              style: TextStyle(
-                height: .8,
-                fontSize: 34,
-                color: Color(0xffa7a7a7),
-              ),
-              textAlign: TextAlign.right,
-              softWrap: false,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            ListView.builder(
-                itemCount: 4,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (ctx, index) {
-                  return Container(
-                      padding: const EdgeInsets.only(
-                          left: 15, right: 15, bottom: 25),
-                      decoration: const BoxDecoration(),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'الجمعة',
-                            style: TextStyle(
-                              fontSize: 30,
-                              color: const Color(0xff433826),
-                              fontWeight: FontWeight.w700,
-                            ),
-                            textAlign: TextAlign.center,
-                            softWrap: false,
-                          ),
-                          const Text(
-                            '‏21 جمادي الاولي 1444 ه',
-                            style: TextStyle(
-                              fontFamily: 'Traditional Arabic',
-                              fontSize: 26,
-                              color: const Color(0xff433826),
-                            ),
-                            textAlign: TextAlign.center,
-                            softWrap: false,
-                          ),
-                          const Text(
-                            'من 2:00 م حتي 3:30 م',
-                            style: TextStyle(
-                              fontFamily: 'Traditional Arabic',
-                              fontSize: 20,
-                              color: const Color(0xffa7a7a7),
-                            ),
-                            textAlign: TextAlign.center,
-                            softWrap: false,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              showDialogWidget(context);
-                            },
-                            child: Container(
-                              height: 40,
-                              width: 220,
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.symmetric(horizontal: 30),
-                              decoration: BoxDecoration(
-                                color: const Color(0x330d7f43),
-                                borderRadius: BorderRadius.circular(21.0),
-                              ),
-                              child: const Texts(
-                                  title: "دخول",
-                                  textColor: Colors.green,
-                                  fontSize: 20,
-                                  weight: FontWeight.bold,
-                                  align: TextAlign.center),
-                            ),
-                          ),
-                        ],
-                      ));
-                }),
-          ]),
-        ),
+          );
+        },
       ),
     );
   }
@@ -166,7 +200,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
         return AlertDialog(
           titlePadding: EdgeInsets.zero,
           contentPadding: EdgeInsets.zero,
-          insetPadding: EdgeInsets.all(18),
+          insetPadding: const EdgeInsets.all(18),
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(15.0))),
           // contentPadding: EdgeInsets.only(top: 10.0),
