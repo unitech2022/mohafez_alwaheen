@@ -16,7 +16,7 @@ class CircleImageWidget extends StatelessWidget {
         imageUrl: image,height: height,width: width,fit: BoxFit.cover,
     
         placeholder: (context, url) => const SizedBox(),
-        errorWidget: (context, url, error) => Icon(Icons.person,size: width/1.5,color: Colors.white,),
+        errorWidget: (context, url, error) => Icon(Icons.person,size: width/1.5,color: Color.fromARGB(255, 41, 40, 40),),
       ),
     );
   }

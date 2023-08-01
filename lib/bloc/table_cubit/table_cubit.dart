@@ -18,7 +18,7 @@ class TableCubit extends Cubit<TableState> {
     var request = http.MultipartRequest(
         'GET',
         Uri.parse(
-            '${ApiConstants.baseUrl}/table/get-tables?teacherId=$teacherId'));
+            '${ApiConstants.baseUrl}/table/get-tables-user?teacherId=$teacherId'));
 
     http.StreamedResponse response = await request.send();
 

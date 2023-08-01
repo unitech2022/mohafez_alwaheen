@@ -11,7 +11,7 @@ class ListEmptyWidget extends StatelessWidget {
         child: Texts(
             title: title,
             textColor: textColor,
-            fontSize: 16,
+            fontSize: 25,
             weight: FontWeight.bold,
             align: TextAlign.center));
   }

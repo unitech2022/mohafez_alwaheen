@@ -1,9 +1,8 @@
 import 'dart:io';
 
-
 import 'package:flutter/material.dart';
-
-
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 pushPage(context, page) {
   Navigator.push(
@@ -41,7 +40,18 @@ SizedBox sizedWidth(double width) => SizedBox(
       width: width,
     );
 
+showTopMessage({context, customBar}) {
+  showTopSnackBar(
+    Overlay.of(context),
+    customBar,
+  );
+}
 
+Future<void> launchUrlFunction(link) async {
+  if (!await launchUrl(Uri.parse(link),mode: LaunchMode.externalApplication)) {
+    await launchUrl(Uri.parse("https://play.google.com/store/search?q=zoom&c=apps"));
+  }
+}
 //     FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 // void firebaseCloudMessaging_Listeners() {
 
@@ -62,28 +72,29 @@ SizedBox sizedWidth(double width) => SizedBox(
 //     print(AppModel.deviceToken);
 //   });
 
-
-
-
-
 // }
 
-
-Future<void> showMyDialog({context ,title ,body ,founction}) async {
+Future<void> showMyDialog({context, title, body, founction}) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
-        title:  Text(title,style: TextStyle(fontSize: 20,color: Colors.black),),
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 20, color: Colors.black),
+        ),
         content: SingleChildScrollView(
           child: ListBody(
             children: [
-            
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(body,style: TextStyle(fontSize: 20,color: Colors.black),textAlign: TextAlign.center,),
+                  Text(
+                    body,
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ],
@@ -91,14 +102,15 @@ Future<void> showMyDialog({context ,title ,body ,founction}) async {
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text("الغاء",style: TextStyle(fontSize: 14,color: Colors.black)),
+            child: const Text("الغاء",
+                style: TextStyle(fontSize: 14, color: Colors.black)),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
-
-           TextButton(
-            child: const Text("تغيير",style: TextStyle(fontSize: 16,color: Colors.black)),
+          TextButton(
+            child: const Text("تغيير",
+                style: TextStyle(fontSize: 16, color: Colors.black)),
             onPressed: founction,
           ),
         ],
@@ -106,4 +118,3 @@ Future<void> showMyDialog({context ,title ,body ,founction}) async {
     },
   );
 }
-

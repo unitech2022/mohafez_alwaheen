@@ -23,10 +23,72 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Expanded(
-              child: Image.asset(
-            "assets/images/back.png",
-            fit: BoxFit.cover,
-          )),
+            child: Stack(
+              children: [
+                Container(
+                  height: double.infinity,
+                  color: const Color(0xff0D7F43),
+                  child: Image.asset(
+                    "assets/images/img_back.png",
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 100,
+                        child: Image.asset(
+                          "assets/images/logo.png",
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Texts(
+                          title: "محفظ الوحيين",
+                          family: "tra",
+                          textColor: Color.fromARGB(255, 246, 247, 245),
+                          fontSize: 35,
+                          weight: FontWeight.bold,
+                          align: TextAlign.center),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Texts(
+                          title: "طريقك لحفظ القرآن الكريم",
+                          family: "tra",
+                          textColor: Color.fromARGB(255, 162, 173, 5),
+                          fontSize: 25,
+                          weight: FontWeight.bold,
+                          align: TextAlign.center),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Texts(
+                          title: "بالقراءات العشر وعشرين رواية",
+                          family: "tra",
+                          textColor: Color.fromARGB(255, 162, 173, 5),
+                          fontSize: 25,
+                          weight: FontWeight.bold,
+                          align: TextAlign.center),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -353,7 +415,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               onTap: () {
                                 pop(context);
                                 pushPage(
-                                    context, ReadersScreen(type: currentIndex == 2?"أنثى": "ذكر"));
+                                    context,
+                                    ReadersScreen(
+                                        type: currentIndex == 2
+                                            ? "معلمة"
+                                            : "معلم"));
                               },
                               child: Container(
                                 height: 50,

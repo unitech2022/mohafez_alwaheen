@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/enums.dart';
 import '../../core/helpers/api_constatns.dart';
 import '../../models/teacher.dart';
+import '../../models/usel_model.dart';
 part 'teacher_state.dart';
 
 class TeacherCubit extends Cubit<TeacherState> {
@@ -29,8 +30,8 @@ class TeacherCubit extends Cubit<TeacherState> {
 
       emit(TeacherState(
           getTeachersState: RequestState.loaded,
-          teachers: List<Teacher>.from(
-              (jsonData as List).map((e) => Teacher.fromJson(e)))));
+          teachers: List<User>.from(
+              (jsonData as List).map((e) => User.fromJson(e)))));
     } else {
       emit(const TeacherState(getTeachersState: RequestState.loading));
     }

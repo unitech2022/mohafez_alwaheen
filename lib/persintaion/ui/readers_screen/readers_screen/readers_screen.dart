@@ -13,6 +13,7 @@ import '../../../../core/widgets/chached_image_widget.dart';
 import '../../../../core/widgets/list_empty.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/texts.dart';
+import '../../../../models/usel_model.dart';
 import '../../reader_screen/reader_screen/reader_screenA.dart';
 
 class ReadersScreen extends StatefulWidget {
@@ -60,7 +61,7 @@ class _ReadersScreenState extends State<ReadersScreen> {
       body: BlocBuilder<TeacherCubit, TeacherState>(
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
             child: state.getTeachersState == RequestState.loading
                 ? const Center(
                     child: LoadingWidget(height: 55, color: Colors.green))
@@ -72,10 +73,10 @@ class _ReadersScreenState extends State<ReadersScreen> {
                     : ListView.builder(
                         itemCount: state.teachers.length,
                         itemBuilder: (ctx, index) {
-                          Teacher teacher = state.teachers[index];
+                          User teacher = state.teachers[index];
                           return Container(
                             height: 100,
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: const BoxDecoration(
                                 border: Border(
                                     bottom: BorderSide(
@@ -85,12 +86,13 @@ class _ReadersScreenState extends State<ReadersScreen> {
                                 Container(
                                   height: 55,
                                   width: 55,
-                                  decoration: const BoxDecoration(
+                                  decoration:  BoxDecoration(
+                                    border: Border.all(color: Colors.grey,width: .8),
                                       shape: BoxShape.circle),
                                   child: ClipRRect(
                                       borderRadius: BorderRadius.circular(25),
                                       child: CircleImageWidget(
-                      height: 55, width: 55, image: ApiConstants.imageUrl(teacher.image)),
+                      height: 55, width: 55, image: ApiConstants.imageUrl(teacher.profileImage??"")),
                                 )),
                                 const SizedBox(
                                   width: 15,
@@ -102,7 +104,7 @@ class _ReadersScreenState extends State<ReadersScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children:  [
                                     Text(
-                                      teacher.name!,
+                                      teacher.fullName!,
                                       style:const TextStyle(
                                           fontSize: 28,
                                           color: Color(0xff433826),
